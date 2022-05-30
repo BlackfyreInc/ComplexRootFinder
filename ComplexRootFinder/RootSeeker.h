@@ -31,6 +31,8 @@ public:
     static double findOneRoot_Secant(Polynom& poly, double x0, double x1);
     static double findOneRoot_Muller(Polynom& poly, double left, double right);
     static double findOneRoot_Halley(Polynom& poly, double left, double right);
+    static complex <double> findOneRoot_Halley_Complex(Polynom& poly, complex <double> left, complex <double> right);
+    static complex <double> findOneRoot_Muller_Complex(Polynom& poly, complex <double> left, complex <double> right);
     static complex <double> findOneRoot_Secant_Complex(Polynom& poly, complex <double> x0, complex <double> x1);
     static complex <double> findOneRoot_Newton_Complex(Polynom poly, complex <double> left, complex <double> right);
     static complex <double> findOneRoot_FalsePosition_Complex(Polynom& poly, complex <double> left, complex <double> right);

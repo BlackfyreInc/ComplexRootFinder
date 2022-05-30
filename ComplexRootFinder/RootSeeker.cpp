@@ -266,47 +266,57 @@ double RootSeeker::findOneRoot_Secant(Polynom& poly, double x0, double x1)
 /// </returns>
 double RootSeeker::findOneRoot_Muller(Polynom& poly, double left, double right)
 {
-    double x0 = left;
-    double x2 = right;
-    double x1 = (left + right) / 2;
-    int i;
-    double res;
-
-    for (i = 0;; ++i)
+    if (left == 0 || right == 0 || left == right) 
     {
-        double f1 = poly.value(x0);
-        double f2 = poly.value(x1);
-        double f3 = poly.value(x2);
-        double d1 = f1 - f3;
-        double d2 = f2 - f3;
-        double h1 = x0 - x2;
-        double h2 = x1 - x2;
-        double a0 = f3;
-        double a1 = (((d2 * pow(h1, 2)) - (d1 * pow(h2, 2))) / ((h1 * h2) * (h1 - h2)));
-        double a2 = (((d1 * h2) - (d2 * h1)) / ((h1 * h2) * (h1 - h2)));
-        double x = ((-2 * a0) / (a1 + abs(sqrt(a1 * a1 - 4 * a0 * a2))));
-        double y = ((-2 * a0) / (a1 - abs(sqrt(a1 * a1 - 4 * a0 * a2))));
+        left += 5;
+        right += 10;
+    }
+    double x2 = left + right + 10;
+    int i = 1, j = 0;
+    double res, t, h4, f1, f2, f3, d1, d2, h1, h2, a0, a1, a2, x, y;
 
-        if (x >= y)
-            res = x + x2;
+    do
+    {
+        f1 = poly.value(left);
+        f2 = poly.value(right);
+        f3 = poly.value(x2);
+        d1 = f1 - f3;
+        d2 = f2 - f3;
+        h1 = left - x2;
+        h2 = right - x2;
+        a0 = f3;
+        a1 = ((d2 * h1 * h1 - d1 * h2 * h2) / (h1 * h2 * (h1 - h2)));
+        a2 = ((d1 * h2 - d2 * h1) / (h1 * h2 * (h1 - h2)));
+        x = -((2 * a0) / (a1 + sqrt(fabs(a1 * a1 - (4 * a2 * a0)))));
+        y = -((2 * a0) / (a1 - sqrt(fabs(a1 * a1 - (4 * a2 * a0)))));
+
+        if (fabs((a1 + sqrt(fabs(a1 * a1 - (4 * a2 * a0))))) > fabs((a1 - sqrt(fabs(a1 * a1 - (4 * a2 * a0))))))
+            h4 = x;
         else
-            res = y + x2;
-
-        double m = res * 100;
-        double n = x2 * 100;
-        m = floor(m);
-        n = floor(n);
-        if (m == n)
-            break;
-        x0 = x1;
-        x1 = x2;
-        x2 = res;
-        if (i > 10000)
+            h4 = y;
+        res = x2 + h4;
+        if (fabs(poly.value(res)) < 0.0001)
         {
-            cout << "Method diverges. More iterations may be needed." << endl;
+            i = 0;
+        }
+        else
+        {
+            t = res;
+            left = right;
+            right = x2;
+            x2 = res;
+        }
+        if (j > 10000) 
+        {
             break;
         }
-    }
+        if (left != left) 
+        {
+            break;
+        }
+        j++;
+    } while (i != 0);
+
     return res;
 }
 /// <summary>
@@ -344,6 +354,47 @@ double RootSeeker::findOneRoot_Halley(Polynom& poly, double left, double right)
     return xn;
 }
 /// <summary>
+/// Halley method for finding one complex root of a polynomial.
+/// </summary>
+/// <param name="poly"></param>
+/// <param name="left"></param>
+/// <param name="right"></param>
+/// <returns>
+/// Returns <see cref="complex <double> xn"/> in case of success.
+/// </returns>
+complex <double> RootSeeker::findOneRoot_Halley_Complex(Polynom& poly, complex <double> left, complex <double> right)
+{
+    Polynom pd = poly.derivative();
+    Polynom pdd = pd.derivative();
+
+    complex <double> x0 = (left + right) / 2.;
+    if (x0 == complex <double>(0,0))
+    {
+        x0 = (left + right) / 2.;
+        if (x0 == 0.0)
+        {
+            x0 -= 5;
+        }
+    }
+
+    complex <double> xn = x0 - (2. * poly.value_complex(x0) * pd.value_complex(x0)) / (2. * (pow(pd.value_complex(x0), 2)) - poly.value_complex(x0) * pdd.value_complex(x0));
+
+    while (abs(xn - x0) > EPSILON)
+    {
+        x0 = xn;
+        xn = xn - (2. * poly.value_complex(xn) * pd.value_complex(xn)) / (2. * (pow(pd.value_complex(xn), 2)) - poly.value_complex(xn) * pdd.value_complex(xn));
+    }
+    if (fabs(xn.real()) < EPSILON)
+    {
+        xn.real (0);
+    }
+    else if (fabs(xn.imag()) < EPSILON)
+    {
+        xn.imag (0);
+    }
+    return xn;
+}
+/// <summary>
 /// Newton–Raphson method for finding one complex root of polynomial.
 /// </summary>
 /// <param name="poly"></param>
@@ -371,13 +422,13 @@ complex <double> RootSeeker::findOneRoot_Newton_Complex(Polynom poly, complex <d
         x0 = xn;
         xn = xn - poly.value_complex(xn) / pd.value_complex(xn);
     }
-    if (abs(xn.real()) < EPSILON)
+    if (fabs(xn.real()) < EPSILON)
     {
-        xn.real(0);
+        xn.real (0);
     }
-    else if (abs(xn.imag()) < EPSILON)
+    else if (fabs(xn.imag()) < EPSILON)
     {
-        xn.imag(0);
+        xn.imag (0);
     }
     return xn;
 }
@@ -406,11 +457,11 @@ complex <double> RootSeeker::findOneRoot_Secant_Complex(Polynom& poly, complex <
         x0 = x1;
         x1 = xn;
     }
-    if (abs(xn.real()) < EPSILON)
+    if (fabs(xn.real()) < EPSILON)
     {
         xn.real(0);
     }
-    else if (abs(xn.imag()) < EPSILON)
+    else if (fabs(xn.imag()) < EPSILON)
     {
         xn.imag(0);
     }
@@ -454,15 +505,70 @@ complex <double> RootSeeker::findOneRoot_FalsePosition_Complex(Polynom& poly, co
             return NOROOT;
         }
     }
-    if (abs(a.real()) < EPSILON) 
+    if (fabs(a.real()) < EPSILON) 
     {
         a.real (0);
     }
-    else if (abs(a.imag()) < EPSILON)
+    else if (fabs(a.imag()) < EPSILON)
     {
         a.imag (0);
     }
     return a;
+}
+
+complex <double> RootSeeker::findOneRoot_Muller_Complex(Polynom& poly, complex <double> left, complex <double> right)
+{
+    complex <double> x0 = left;
+    complex <double> x2 = right;
+    complex <double> x1 = (left + right) / 2.;
+    int i;
+    complex <double> res;
+
+    for (i = 0;; ++i)
+    {
+        complex <double> f1 = poly.value_complex(x0);
+        complex <double> f2 = poly.value_complex(x1);
+        complex <double> f3 = poly.value_complex(x2);
+        complex <double> d1 = f1 - f3;
+        complex <double> d2 = f2 - f3;
+        complex <double> h1 = x0 - x2;
+        complex <double> h2 = x1 - x2;
+        complex <double> a0 = f3;
+        complex <double> a1 = (((d2 * pow(h1, 2)) - (d1 * pow(h2, 2))) / ((h1 * h2) * (h1 - h2)));
+        complex <double> a2 = (((d1 * h2) - (d2 * h1)) / ((h1 * h2) * (h1 - h2)));
+        complex <double> x = ((-2. * a0) / (a1 + abs(sqrt(a1 * a1 - 4. * a0 * a2))));
+        complex <double> y = ((-2. * a0) / (a1 - abs(sqrt(a1 * a1 - 4. * a0 * a2))));
+        double modx = norm(x);
+        double mody = norm(y);
+        if (modx >= mody)
+            res = x + x2;
+        else
+            res = y + x2;
+
+        complex <double> m = res * 100.;
+        complex <double> n = x2 * 100.;
+        double mm = floor(norm(m));
+        double nn = floor(norm(n));
+        if (mm == nn)
+            break;
+        x0 = x1;
+        x1 = x2;
+        x2 = res;
+        if (i > 10000)
+        {
+            cout << "Method diverges. More iterations may be needed." << endl;
+            break;
+        }
+    }
+    if (fabs(res.real()) < EPSILON)
+    {
+        res.real(0);
+    }
+    else if (fabs(res.imag()) < EPSILON)
+    {
+        res.imag(0);
+    }
+    return res;
 }
 /// <summary>
 /// One of numerical methods to solve and find roots of polynomials. Finds both real and complex roots.

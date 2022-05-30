@@ -334,6 +334,8 @@ int main()
     double time2 = 0;
     double time3 = 0;
     double time4 = 0;
+    double time5 = 0;
+    double time6 = 0;
     double test_poly4[][4] = { {3, 1, 3, 1}, { 6, 3, 2, 1 }, { -3, -1, -1, 2 }, { -10, 3, -8, 1 } };
 
     for (int i = 0; i < 4; ++i) 
@@ -366,14 +368,28 @@ int main()
         time3 += (EndSc - StartSc) / (double)CLOCKS_PER_SEC;
         cout << c << endl;
 
+        cout << "(Halley Method) ";
+        clock_t StartHl = clock();
+        complex <double> d = rs.findOneRoot_Halley_Complex(p1, c1, c2);
+        clock_t EndHl = clock();
+        time4 += (EndHl - StartHl) / (double)CLOCKS_PER_SEC;
+        cout << d << endl;
+
+        cout << "(Muller Method) ";
+        clock_t StartMl = clock();
+        complex <double> e = rs.findOneRoot_Halley_Complex(p1, c1, c2);
+        clock_t EndMl = clock();
+        time5 += (EndMl - StartMl) / (double)CLOCKS_PER_SEC;
+        cout << e << endl;
+
         cout << "(Durand-Kerner Method) ";
         clock_t StartDK = clock();
-        complex <double>* d = rs.DurandKerner(p1, p1.degree+1);
+        complex <double>* f = rs.DurandKerner(p1, p1.degree+1);
         clock_t EndDK = clock();
-        time4 += (EndDK - StartDK) / (double)CLOCKS_PER_SEC;
+        time6 += (EndDK - StartDK) / (double)CLOCKS_PER_SEC;
         for (int i = 0; i < p1.degree; i++) 
         {
-            cout << d[i] << endl;
+            cout << f[i] << endl;
         }  
         cout << "\n";
 
@@ -383,7 +399,11 @@ int main()
 
         cout << "Secant: " << time3 << " seconds\n";
 
-        cout << "Durand-Kerner: " << time4 << " seconds\n";
+        cout << "Halley: " << time4 << " seconds\n";
+
+        cout << "Muller: " << time5 << " seconds\n";
+
+        cout << "Durand-Kerner: " << time6 << " seconds\n";
 
         cout << "\n";
     }
