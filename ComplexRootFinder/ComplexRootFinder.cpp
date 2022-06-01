@@ -1,7 +1,6 @@
-#include "RootSeeker.h"
-#include "Polynom.h"
 #include <ctime>
 #include <random>
+#include "RootSeeker.h"
 
 
 #define RAND_MAX 10000
@@ -272,7 +271,7 @@ int main()
     double t5 = 0;
     double* ar;
     cout.setstate(ios_base::failbit);
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < 10; i++)
     {
         int n = rand() % 15;
         if (n == 0)
@@ -382,14 +381,14 @@ int main()
         time5 += (EndMl - StartMl) / (double)CLOCKS_PER_SEC;
         cout << e << endl;
 
-        cout << "(Durand-Kerner Method) ";
+        cout << "(Durand-Kerner Method) " << endl;
         clock_t StartDK = clock();
-        complex <double>* f = rs.DurandKerner(p1, p1.degree+1);
+        complex <double>* f = rs.DurandKerner(p1, p1.degree);
         clock_t EndDK = clock();
         time6 += (EndDK - StartDK) / (double)CLOCKS_PER_SEC;
         for (int i = 0; i < p1.degree; i++) 
         {
-            cout << f[i] << endl;
+            cout << "     " << f[i] << endl;
         }  
         cout << "\n";
 
@@ -442,7 +441,48 @@ int main()
         }
         cout << "\n";
     }
-    */ 
+    */
+    // Test 6. Complex polynomials, Jenking-Traub method WIP
+    cout << "\n\n\n\n\n\n\n\n\n TEST 5\n\n";
 
+    complex <double> c(1.0, 0.0), cc(0.0, 2.0), cc1(0.0, 1.0), cc2(1.0, 0.0);
+    complex <double> carr[][4] = { {c,cc,cc1,cc2} };
+    ComplexPolynom cp = rs.SetPoly_(3,carr[0]);
+
+    rs.printCPoly();
+
+    cout << "(Newton Method) ";
+    complex <double> c4(1.0, 3.0);
+    complex <double> c5(4.0, 5.0);
+    complex <double> a = rs.findOneRoot_Newton_Complex(cp, c4, c5);
+    cout << a << endl;
+
+    cout << "(False Position Method) ";
+    complex <double> b = rs.findOneRoot_FalsePosition_Complex(cp, c4, c5);
+    cout << b << endl;
+
+    cout << "(Secant Method) ";
+    complex <double> sc = rs.findOneRoot_Secant_Complex(cp, c4, c5);
+    cout << sc << endl;
+
+    cout << "(Durand-Kerner Method) " << endl;
+    complex <double>* d = rs.DurandKerner(cp, cp.degree);
+    for (int i = 0; i < cp.degree; i++)
+    {
+        cout << "     " << d[i] << endl;
+    }
+
+    cout << "(Muller Method) ";
+    complex <double> e = rs.findOneRoot_Muller_Complex(cp, c4, c5);
+    cout << e << endl;
+
+    cout << "(Halley Method) ";
+    complex <double> f = rs.findOneRoot_Halley_Complex(cp, c4, c5);
+    cout << f << endl;
+
+    //cout << "(JT Method) ";
+    //complex <double> g = rs.findOneRootJenkinsTraub(cp);
+    //cout << g << endl;
+    cout << "\n";
 
 }

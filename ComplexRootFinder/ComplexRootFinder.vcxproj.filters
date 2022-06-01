@@ -24,12 +24,18 @@
     <ClCompile Include="RootSeeker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ComplexPolynom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Polynom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RootSeeker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ComplexPolynom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -139,11 +139,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ComplexPolynom.cpp" />
     <ClCompile Include="ComplexRootFinder.cpp" />
     <ClCompile Include="Polynom.cpp" />
     <ClCompile Include="RootSeeker.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ComplexPolynom.h" />
     <ClInclude Include="Polynom.h" />
     <ClInclude Include="RootSeeker.h" />
   </ItemGroup>
