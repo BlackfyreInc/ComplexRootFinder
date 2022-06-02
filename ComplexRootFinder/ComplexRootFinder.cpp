@@ -472,6 +472,7 @@ int main()
         cout << "     " << d[i] << endl;
     }
 
+
     cout << "(Muller Method) ";
     complex <double> e = rs.findOneRoot_Muller_Complex(cp, c4, c5);
     cout << e << endl;
